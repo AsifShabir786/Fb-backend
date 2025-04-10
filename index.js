@@ -21,8 +21,11 @@ const server = http.createServer(app);
 
 
 const corsOptions = {
-    origin: "http://localhost:3000", // Ensure this matches your frontend URL
-    credentials: true,
+  origin: [
+        "http://localhost:3000", // dev frontend
+        "https://your-frontend.vercel.app" // prod frontend domain
+      ],
+        credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: "Content-Type, Authorization"
 };

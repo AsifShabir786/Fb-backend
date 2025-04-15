@@ -4,8 +4,11 @@ const postSchema = new mongoose.Schema({
     user:{type:mongoose.Schema.Types.ObjectId, ref:'User', required:true},
     content:{type:String},
     mediaUrl:{type:String},
+    groupName:{type:String},
+
     mediaType:{type:String, enum:['image','video']},
     group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group', default: null },
+    
 
     likes:[{type:mongoose.Schema.Types.ObjectId, ref:'User'}],
     comments:[

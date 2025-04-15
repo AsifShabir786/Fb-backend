@@ -26,7 +26,7 @@ const createPost = async(req,res) =>{
             user:userId,
             content,
             group: groupId || null,
-            group: groupName || null,
+            groupName: groupName || null,
 
 
             mediaUrl,

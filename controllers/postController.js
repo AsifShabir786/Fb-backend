@@ -10,7 +10,7 @@ const createPost = async(req,res) =>{
     try {
         const userId = req.user.userId;
  
-        const {content,groupId} = req.body;
+        const {content,groupId,groupName} = req.body;
         const file= req.file;
         let mediaUrl = null;
         let mediaType = null;
@@ -26,6 +26,8 @@ const createPost = async(req,res) =>{
             user:userId,
             content,
             group: groupId || null,
+            group: groupName || null,
+
 
             mediaUrl,
             mediaType,

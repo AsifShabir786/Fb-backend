@@ -9,8 +9,8 @@ const response = require("../utils/responceHandler");
 const createPost = async(req,res) =>{
     try {
         const userId = req.user.userId;
-
-        const {content} = req.body;
+ 
+        const {content,groupId} = req.body;
         const file= req.file;
         let mediaUrl = null;
         let mediaType = null;
@@ -25,6 +25,8 @@ const createPost = async(req,res) =>{
         const newPost = await new Post({
             user:userId,
             content,
+            group: groupId || null,
+
             mediaUrl,
             mediaType,
             likeCount:0,

@@ -5,6 +5,9 @@ const connectDb = require('./config/db');
 require('dotenv').config()
 const authRoute= require('./routes/authRoute')
 const postRoute= require('./routes/postRoute')
+const groupRoute= require('./routes/groupRoute')
+
+
 const userRoute = require('./routes/userRoute');
 const passport = require('./controllers/googleController');
 const Message = require('./model/Message');
@@ -51,8 +54,11 @@ app.use(passport.initialize())
 app.use('/api/chat', chatRoutes);
 
 app.use('/auth',authRoute)
-app.use('/users',postRoute)
-app.use('/users',userRoute)
+ app.use('/users',userRoute)
+ app.use('/groupRoute',groupRoute)
+
+app.use('/postRoute',postRoute)
+
 
 io.on('connection', (socket) => {
     console.log('A user connected: ', socket.id);

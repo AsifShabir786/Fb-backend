@@ -10,7 +10,7 @@ const createListing = async (req, res) => {
       category,
       condition,
       imageUrl,
-      sellerName,description,
+      sellerName,description,isFeatured,
       PhoneNumber,
       sellerId
     } = req.body;
@@ -21,7 +21,7 @@ const createListing = async (req, res) => {
       category,
       condition,
       imageUrl,
-      sellerName,description,PhoneNumber,
+      sellerName,description,isFeatured,PhoneNumber,
       sellerId
     });
 

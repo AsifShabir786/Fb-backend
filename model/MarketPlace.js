@@ -13,6 +13,8 @@ const listingSchema = new mongoose.Schema({
 
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   isActive: { type: Boolean, default: true },
+  isFeatured: { type: Boolean, default: true },
+
   listingDate: { type: Date, default: Date.now }
 }, { timestamps: true });
 

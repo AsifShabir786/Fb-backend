@@ -6,6 +6,10 @@ require('dotenv').config()
 const authRoute= require('./routes/authRoute')
 const postRoute= require('./routes/postRoute')
 const groupRoute= require('./routes/groupRoute')
+const PagesRoute= require('./routes/PagesRoute')
+const MarketPlaceRoute= require('./routes/MarketPlaceRoute')
+
+
 
 
 const userRoute = require('./routes/userRoute');
@@ -56,6 +60,10 @@ app.use('/api/chat', chatRoutes);
 app.use('/auth',authRoute)
  app.use('/users',userRoute)
  app.use('/groupRoute',groupRoute)
+ app.use('/PagesRoute',PagesRoute)
+ app.use('/MarketPlace',MarketPlaceRoute)
+
+
 
 app.use('/postRoute',postRoute)
 

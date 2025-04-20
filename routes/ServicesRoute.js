@@ -5,7 +5,7 @@ const {
   getListingById,
   updateListing,
   deleteListing
-} = require('../controllers/ServicesController');
+} = require('../controllers/servicesController');
 const { createCheckoutSession, createPaymentIntent } = require('../controllers/StripeController');
 
 const router = express.Router();

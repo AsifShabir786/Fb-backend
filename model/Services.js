@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const listingSchema = new mongoose.Schema({
   title: { type: String, required: true },
   price: { type: Number, required: true },
-  category: [{ type: String, required: true }],
+  category: [{ type: String, required: false }],
   condition: { type: String, required: true },
   imageUrl:[{ type: String, default: null }],
   sellerName: { type: String, required: true },

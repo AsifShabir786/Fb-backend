@@ -5,16 +5,16 @@ const {
   getListingById,
   updateListing,
   deleteListing
-} = require('../controllers/MarketPlaceController');
+} = require('../controllers/ServicesController');
 const { createCheckoutSession, createPaymentIntent } = require('../controllers/StripeController');
 
 const router = express.Router();
 
-router.post('/marketplace', createListing);
-router.get('/marketplace', getAllListings);
-router.get('/marketplace/:id', getListingById);
-router.put('/marketplace/:id', updateListing);
-router.delete('/marketplace/:id', deleteListing);
+router.post('/Services', createListing);
+router.get('/Services', getAllListings);
+router.get('/Services/:id', getListingById);
+router.put('/Services/:id', updateListing);
+router.delete('/Services/:id', deleteListing);
 router.post('/create-checkout-session', createPaymentIntent);
 
 module.exports = router;

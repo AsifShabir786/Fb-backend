@@ -8,6 +8,8 @@ const postRoute= require('./routes/postRoute')
 const groupRoute= require('./routes/groupRoute')
 const PagesRoute= require('./routes/PagesRoute')
 const MarketPlaceRoute= require('./routes/MarketPlaceRoute')
+const ServicesRoute= require('./routes/ServicesRoute')
+
 
 
 
@@ -62,6 +64,8 @@ app.use('/auth',authRoute)
  app.use('/groupRoute',groupRoute)
  app.use('/PagesRoute',PagesRoute)
  app.use('/MarketPlace',MarketPlaceRoute)
+ app.use('/Services',ServicesRoute)
+
 
 
 

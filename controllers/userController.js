@@ -221,14 +221,15 @@ const getAllMutualFriends = async (req, res) => {
 
 
 //get all users so that you can search for profile 
-const getAllUser = async(req, res) =>{
+const getAllUser = async (req, res) => {
     try {
-        const users = await User.find().select('username profilePicture email followerCount')
-         return response(res,200, 'users get successfully',users)
-   } catch (error) {
-       return response(res, 500, 'Internal server error', error.message)
-   }
-}
+        const users = await User.find().select('username profilePicture email followerCount dateOfBirth');
+        return response(res, 200, 'Users fetched successfully', users);
+    } catch (error) {
+        return response(res, 500, 'Internal server error', error.message);
+    }
+};
+
 
 //check if user is authenticated or not 
 const checkUserAuth = async(req, res) =>{

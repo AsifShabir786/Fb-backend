@@ -5,6 +5,8 @@ const postSchema = new mongoose.Schema({
     content:{type:String},
     mediaUrl:{type:String},
     groupName:{type:String},
+    pages:{type:String},
+
 
     mediaType:{type:String, enum:['image','video']},
     group: { type: mongoose.Schema.Types.ObjectId, ref: 'Group', default: null },

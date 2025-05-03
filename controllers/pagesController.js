@@ -85,7 +85,7 @@ const createPost = async(req,res) =>{
       const file= req.file;
       let mediaUrl = null;
       let mediaType = null;
-
+console.log(pages,'pages______')
       if(file) {
         const uploadResult = await uploadFileToCloudinary(file)
         mediaUrl= uploadResult?.secure_url;

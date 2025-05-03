@@ -6,6 +6,8 @@ const postSchema = new mongoose.Schema({
     mediaUrl:{type:String},
     groupName:{type:String},
     pages:{type:String},
+    isFeatured:{type:String},
+
 
 
     mediaType:{type:String, enum:['image','video']},

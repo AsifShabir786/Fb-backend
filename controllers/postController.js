@@ -10,7 +10,7 @@ const createPost = async(req,res) =>{
     try {
         const userId = req.user.userId;
  
-        const {content,groupId,groupName,pages} = req.body;
+        const {content,groupId,groupName,pages,isFeatured} = req.body;
 console.log(pages,'pages______111')
 
         const file= req.file;
@@ -30,6 +30,8 @@ console.log(pages,'pages______111')
             group: groupId || null,
             groupName: groupName || null,
             pages: pages || null,
+            isFeatured: isFeatured || null,
+
 
 
 

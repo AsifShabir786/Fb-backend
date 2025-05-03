@@ -5,6 +5,8 @@ const groupSchema = new mongoose.Schema({
     description: { type: String },
     coverImage: { type: String, default: null },
     pages: { type: String, default: null },
+    isFeatured: { type: String, default: null },
+
 
     
     admin: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

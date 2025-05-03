@@ -81,7 +81,7 @@ const createPost = async(req,res) =>{
   try {
       // const userId = req.user.userId || req.body ;
 
-      const {content,groupId,userId,groupName,pages} = req.body;
+      const {content,groupId,userId,groupName,pages,isFeatured} = req.body;
       const file= req.file;
       let mediaUrl = null;
       let mediaType = null;
@@ -99,6 +99,8 @@ console.log(pages,'pages______')
           group: groupId || null,
           groupName: groupName || null,
           pages: pages || null,
+          isFeatured: isFeatured || null,
+
 
 
            mediaUrl,

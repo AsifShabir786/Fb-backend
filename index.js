@@ -4,6 +4,8 @@ const cors= require('cors');
 const connectDb = require('./config/db');
 require('dotenv').config()
 const authRoute= require('./routes/authRoute')
+const StoryRoute= require('./routes/Story')
+
 const postRoute= require('./routes/postRoute')
 const groupRoute= require('./routes/groupRoute')
 const PagesRoute= require('./routes/PagesRoute')
@@ -64,6 +66,8 @@ app.use(passport.initialize())
 app.use('/api/chat', chatRoutes);
 
 app.use('/auth',authRoute)
+app.use('/Story',StoryRoute)
+
  app.use('/users',userRoute)
  app.use('/groupRoute',groupRoute)
  app.use('/PagesRoute',PagesRoute)

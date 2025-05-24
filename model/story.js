@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
 const storySchema = new mongoose.Schema({
-    user:{type:mongoose.Schema.Types.ObjectId, ref:'User', required:true},
-    mediaUrl:{type:String},
-    mediaType:{type:String, enum:['image','video']},
-},{timestamps:true})
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  mediaUrl: String,
+  createdAt: { type: Date, default: Date.now },
+  expiresAt: { type: Date },
+});
 
+storySchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
-const Story = mongoose.model('Story',storySchema)
-module.exports = Story;
+module.exports = mongoose.model('story', storySchema);

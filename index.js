@@ -26,6 +26,7 @@ const Message = require('./model/Message');
 const socketIO = require('socket.io');
 const http = require('http');
 const chatRoutes = require('./routes/chatRoutes');
+const adsRoute = require('./routes/adsRoute');
 
 
 
@@ -67,6 +68,7 @@ app.use('/api/chat', chatRoutes);
 
 app.use('/auth',authRoute)
 app.use('/Story',StoryRoute)
+app.use('/adsRoute', adsRoute);
 
  app.use('/users',userRoute)
  app.use('/groupRoute',groupRoute)

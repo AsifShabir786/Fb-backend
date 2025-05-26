@@ -51,7 +51,8 @@ router.post('/api/stories', upload.single('media'), async (req, res) => {
 // Fetch all active stories grouped by user
 router.get('/api/stories', async (req, res) => {
   try {
-    const stories = await Story.find({ expiresAt: { $gt: new Date() } }).populate('userId');
+    const stories = await Story.find({ expiresAt: { $gt: new Date() } }).populate('userId', 'username profilePicture firstName profilePicture name lastName'); // Include additional fields
+
     const grouped = {};
 
     stories.forEach((story) => {

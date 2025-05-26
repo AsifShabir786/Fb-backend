@@ -52,6 +52,18 @@ const getListingById = async (req, res) => {
     return response(res, 500, 'Error fetching listing', err.message);
   }
 };
+const getListingsBySellerId = async (req, res) => {
+  try {
+    const listings = await MarketPlace.find({ sellerId: req.params.sellerId });
+    if (!listings || listings.length === 0) {
+      return response(res, 404, 'No listings found for this seller');
+    }
+    return response(res, 200, 'Listings fetched', listings);
+  } catch (err) {
+    return response(res, 500, 'Error fetching listings', err.message);
+  }
+};
+
 
 // UPDATE Listing
 const updateListing = async (req, res) => {
@@ -82,7 +94,7 @@ const deleteListing = async (req, res) => {
 module.exports = {
   createListing,
   getAllListings,
-  getListingById,
+  getListingById,getListingsBySellerId,
   updateListing,
   deleteListing
 };

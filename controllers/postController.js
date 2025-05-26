@@ -123,27 +123,41 @@ const getAllPosts = async(req, res) => {
 
 
 //get post by userId
-const getPostByUserId = async(req, res) => {
-    const {userId} = req.params;
-    
+const getPostByUserId = async (req, res) => {
+    // const { userId, media } = req.params;
+    const { userId } = req.params;
+const { media } = req.query;
+
+console.log(media,'_______')
     try {
-        if(!userId){
-            return response(res,400,'UserId is require to get user post')
+        if (!userId) {
+            return response(res, 400, 'UserId is required to get user post');
         }
 
-        const posts = await Post.find({user:userId})
-        .sort({createdAt: -1})
-        .populate('user','_id username profilePicture email')
-        .populate({
-            path: 'comments.user',
-            select: 'username, profilePicture'
-        })
-        return response(res, 201, 'Get user post successfully', posts)
+        // Fetch posts
+        let posts = await Post.find({ user: userId })
+            .sort({ createdAt: -1 })
+            .populate('user', '_id username profilePicture email')
+            .populate({
+                path: 'comments.user',
+                select: 'username profilePicture',
+            });
+
+        // If media is provided, filter for video files (e.g., .mp4, .mov, .avi, etc.)
+        if (media) {
+            const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv'];
+            posts = posts.filter(post => {
+                const url = post.mediaUrl || '';
+                return videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
+            });
+        }
+
+        return response(res, 201, 'Get user post successfully', posts);
     } catch (error) {
-        console.log('error getting posts',error)
-        return response(res,500,'Internal server error',error.message)
+        console.log('Error getting posts:', error);
+        return response(res, 500, 'Internal server error', error.message);
     }
-}
+};
 
 //like post api
 const likePost = async(req, res) => {

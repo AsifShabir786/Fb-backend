@@ -39,7 +39,7 @@ const server = http.createServer(app);
 const corsOptions = {
   origin: [
         "http://localhost:3000", // dev frontend
-        "https://fb-frontend-phi.vercel.app" // prod frontend domain
+        "https://svryn.vercel.app" // prod frontend domain
       ],
         credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",

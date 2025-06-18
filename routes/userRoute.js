@@ -36,7 +36,7 @@ router.get('/profile/:userId',authMiddleware,getUserProfile)
 
 
 //get all users fror search 
-router.get('/check-auth',authMiddleware,checkUserAuth)
+router.get('/check-auth',checkUserAuth)
 
 
 

@@ -1,7 +1,68 @@
 const User = require("../model/User");
 const { generateToken } = require("../utils/generateToken");
 const response = require("../utils/responceHandler");
-const bcrypt = require('bcryptjs')
+const crypto = require("crypto"); // ✅ Native module
+const sendEmail = require("../utils/sendEmail"); // you'll implement this
+const bcrypt = require('bcrypt'); // Or require('bcryptjs') if you installed bcryptjs
+
+const requestPasswordReset = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return response(res, 404, "User not found");
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const tokenExpiry = Date.now() + 1000 * 60 * 15;
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = tokenExpiry;
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/Resetpassword?token=${resetToken}`;
+    const message = `You requested a password reset. Click here to reset: ${resetUrl}`;
+
+    await sendEmail(user.email, "Reset your password", message);
+
+    return response(res, 200, "Reset link sent to email");
+  } catch (error) {
+    console.log(error);
+    return response(res, 500, "Something went wrong", error.message);
+  }
+};
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  try {
+    if (!password || password.length < 6) {
+      return response(res, 400, "Password must be at least 6 characters");
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return response(res, 400, "Invalid or expired token");
+    }
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    return response(res, 200, "Password has been reset successfully");
+  } catch (error) {
+    console.error(error);
+    return response(res, 500, "Something went wrong", error.message);
+  }
+};
 
 
 
@@ -99,4 +160,4 @@ const logout = (req,res) =>{
 }
 
 
-module.exports = {registerUser,loginUser,logout}
+module.exports = {registerUser,loginUser,logout,resetPassword,requestPasswordReset}

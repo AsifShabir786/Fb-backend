@@ -1,5 +1,6 @@
 const express = require('express');
-const { registerUser, loginUser, logout } = require('../controllers/authController');
+const { registerUser, loginUser, logout,requestPasswordReset,
+  resetPassword, } = require('../controllers/authController');
 const passport = require('passport');
 const { generateToken } = require('../utils/generateToken');
 const router = express.Router();
@@ -9,7 +10,8 @@ const router = express.Router();
 router.post('/register',registerUser)
 router.post('/login',loginUser)
 router.get('/logout', logout)
-
+router.post('/request-reset-password', requestPasswordReset);
+router.post('/reset-password/:token', resetPassword);
 
 
 //google oauth routes

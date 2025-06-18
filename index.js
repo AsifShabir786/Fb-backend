@@ -1,67 +1,104 @@
 const express = require('express');
-const cookieParser = require('cookie-parser')
-const cors= require('cors');
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const connectDb = require('./config/db');
-require('dotenv').config()
-const authRoute= require('./routes/authRoute')
-const StoryRoute= require('./routes/Story')
+require('dotenv').config();
+const session = require('express-session');
+const passport = require('passport'); // <- note: passport itself, not your controller
+require('./controllers/googleController'); // <- sets up Google Strategy
 
-const postRoute= require('./routes/postRoute')
-const groupRoute= require('./routes/groupRoute')
-const PagesRoute= require('./routes/PagesRoute')
-const MediaRoute= require('./routes/MediaRoute')
-
-const MarketPlaceRoute= require('./routes/MarketPlaceRoute')
-const ServicesRoute= require('./routes/ServicesRoute')
-const ReviewRoute= require('./routes/ReviewRoute')
-
-
-
-
-
-
+const authRoute = require('./routes/authRoute');
+const StoryRoute = require('./routes/Story');
+const postRoute = require('./routes/postRoute');
+const groupRoute = require('./routes/groupRoute');
+const PagesRoute = require('./routes/PagesRoute');
+const MediaRoute = require('./routes/MediaRoute');
+const MarketPlaceRoute = require('./routes/MarketPlaceRoute');
+const ServicesRoute = require('./routes/ServicesRoute');
+const ReviewRoute = require('./routes/ReviewRoute');
 const userRoute = require('./routes/userRoute');
-const passport = require('./controllers/googleController');
-const Message = require('./model/Message');
-const socketIO = require('socket.io');
-const http = require('http');
 const chatRoutes = require('./routes/chatRoutes');
 const adsRoute = require('./routes/adsRoute');
 
+const socketIO = require('socket.io');
+const http = require('http');
 
-
-const app = express()
-app.use(express.json())
-app.use(cookieParser())
+const app = express();
 const server = http.createServer(app);
-
 
 const corsOptions = {
   origin: [
-        "http://localhost:3000", // dev frontend
-        "https://svryn.vercel.app" // prod frontend domain
-      ],
-        credentials: true,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type, Authorization"
+    "http://localhost:3000",
+    "http://localhost:8080"
+  ],
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type, Authorization"
 };
+
 const io = socketIO(server, {
-    cors: corsOptions
-  });
-  
+  cors: corsOptions
+});
+
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // handles OPTIONS method
+app.options('*', cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
 
-// app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-//     res.header("Access-Control-Allow-Headers", "X-Requested-With");
-//     next();
-//     });
-// app.use(cors(corsOptions))
+// Sessions (required for OAuth to persist user-login state)
+app.use(
+  session({
+secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-connectDb()
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use(passport.initialize())
+// Connect DB
+connectDb();
+
+// 🔑 Google OAuth Routes
+// app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// app.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Start Google Auth
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
+
+// Callback
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: `${process.env.FRONTEND_URL}/user-login`,
+    session: true,
+  }),
+  (req, res) => {
+    res.redirect(`${process.env.FRONTEND_URL}`);
+  }
+);
+
+app.get(
+  '/google/callback',
+  passport.authenticate('google', {
+    successRedirect: 'http://localhost:3000', // or your frontend route
+    failureRedirect: 'http://localhost:3000/user-login',
+  })
+);
+
+app.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: `${process.env.FRONTEND_URL}/user-login`,
+    session: true,
+  }),
+  (req, res) => {
+    // Redirect to frontend with session (or token if using JWT)
+    res.redirect(`${process.env.FRONTEND_URL}`);
+  }
+);
 
 //api route
 app.use('/api/chat', chatRoutes);

@@ -1,11 +1,16 @@
 const mongoose= require('mongoose');
 
 const userSchema = new mongoose.Schema({
+      googleId: { type: String, default: null }, // ✅ Google ID
+  username: { type: String, required: false },
     username:{type:String,required:true},
     email:{type:String,required:true,unique:true},
     password:{type:String,default:null},
     gender:{type:String,default:null},
     desc:{type:String,default:null},
+    resetPasswordToken: { type: String },
+resetPasswordExpire: { type: Date },
+
 
     dateOfBirth:{type:Date,default:null},
     profilePicture:{type:String,default:null},

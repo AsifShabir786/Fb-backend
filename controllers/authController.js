@@ -3,7 +3,7 @@ const { generateToken } = require("../utils/generateToken");
 const response = require("../utils/responceHandler");
 const crypto = require("crypto"); // ✅ Native module
 const sendEmail = require("../utils/sendEmail"); // you'll implement this
-const bcrypt = require('bcrypt'); // Or require('bcryptjs') if you installed bcryptjs
+const bcrypt = require("bcrypt"); // Or require('bcryptjs') if you installed bcryptjs
 
 const requestPasswordReset = async (req, res) => {
   const { email } = req.body;
@@ -13,7 +13,10 @@ const requestPasswordReset = async (req, res) => {
     if (!user) return response(res, 404, "User not found");
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
     const tokenExpiry = Date.now() + 1000 * 60 * 15;
 
     user.resetPasswordToken = hashedToken;
@@ -64,100 +67,108 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const registerUser = async (req, res) => {
+  try {
+    const { username, email, password, gender, dateOfBirth } = req.body;
 
-
-const registerUser = async(req,res) =>{
-    try {
-         const {username,email,password,gender,dateOfBirth} = req.body;
-         
-        //  check the existing user with email
-        const existingUser = await User.findOne({email});
-        if(existingUser){
-            return response(res,400,'User with this email already exists')
-        }
-       
-        const hashedPassword = await bcrypt.hash(password,10)
-        const newUser = new User({
-            username,
-            email,
-            password:hashedPassword,
-            gender,
-            dateOfBirth
-        })
-
-        await newUser.save();
-        
-        const accessToken = generateToken(newUser);
-
-        res.cookie("auth_token",accessToken,{
-            httpOnly: true,
-            sameSite:"none",
-            secure:true
-        })
-
-
-        return response(res,201,"User created successfully",{
-             username:newUser.username,
-             email:newUser.email
-        })
-
-    } catch (error) {
-        console.error(error)
-        return response(res,500,"Internal Server Error",error.message)
+    //  check the existing user with email
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return response(res, 400, "User with this email already exists");
     }
-}
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+      gender,
+      dateOfBirth,
+    });
 
-const loginUser = async(req,res) =>{
-    try {
-         const {email,password} = req.body;
-         
-        //  check the existing user with email
-        const user = await User.findOne({email});
-        if(!user){
-            return response(res,404,'User not found with this email')
-        }
-       
-        const matchPassword = await bcrypt.compare(password,user.password)
-        if(!matchPassword){
-            return response(res,404,'Invalid Password')
-        }
-        
-        const accessToken = generateToken(user);
+    await newUser.save();
 
-        res.cookie("auth_token",accessToken,{
-            httpOnly: true,
-            sameSite:"none",
-            secure:true
-        })
+    const accessToken = generateToken(newUser);
 
+    res.cookie("auth_token", accessToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
 
-        return response(res,201,"User logged in successfully",{
-             username:user.username,
-             email:user.email
-        })
+    return response(res, 201, "User created successfully", {
+      username: newUser.username,
+      email: newUser.email,
+    });
+  } catch (error) {
+    console.error(error);
+    return response(res, 500, "Internal Server Error", error.message);
+  }
+};
 
-    } catch (error) {
-        console.error(error)
-        return response(res,500,"Internal Server Error",error.message)
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log("email:", email);
+    console.log("password:", password);
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return response(res, 404, "User not found with this email");
     }
-}
 
+    console.log("user.password:", user.password);
 
-const logout = (req,res) =>{
-    try {
-        res.cookie("auth_token", "", {
-            httpOnly: true,
-            sameSite:"none",
-            secure:true,
-            expires: new Date(0)
-        })
-        return response(res,200,"User logged out successfully")
-    } catch (error) {
-        console.error(error)
-        return response(res,500,"Internal Server Error",error.message)
+    const matchPassword = await bcrypt.compare(password, user.password);
+    if (!matchPassword) {
+      return response(res, 404, "Invalid Password");
     }
-}
 
+    const accessToken = generateToken(user);
 
-module.exports = {registerUser,loginUser,logout,resetPassword,requestPasswordReset}
+    res.cookie("auth_token", accessToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
+    // ✅ Send full user object along with token
+    return response(res, 201, "User logged in successfully", {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      phone: user.phone,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      token: accessToken,
+    });
+  } catch (error) {
+    console.error(error);
+    return response(res, 500, "Internal Server Error", error.message);
+  }
+};
+
+const logout = (req, res) => {
+  try {
+    res.cookie("auth_token", "", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      expires: new Date(0),
+    });
+    return response(res, 200, "User logged out successfully");
+  } catch (error) {
+    console.error(error);
+    return response(res, 500, "Internal Server Error", error.message);
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logout,
+  resetPassword,
+  requestPasswordReset,
+};

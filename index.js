@@ -31,7 +31,7 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://svryn.vercel.app"],
+  origin: ["http://82.221.139.203:9003", "https://svryn.vercel.app"],
   credentials: true,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   allowedHeaders: "Content-Type, Authorization",

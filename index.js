@@ -19,6 +19,10 @@ const ReviewRoute = require("./routes/ReviewRoute");
 const userRoute = require("./routes/userRoute");
 const chatRoutes = require("./routes/chatRoutes");
 const adsRoute = require("./routes/adsRoute");
+const Adsadshort = require("./routes/adsRouteadshort");
+const stripeRoute = require("./routes/stripe");
+
+
 
 const socketIO = require("socket.io");
 const http = require("http");
@@ -108,6 +112,10 @@ app.use("/api/chat", chatRoutes);
 app.use("/auth", authRoute);
 app.use("/Story", StoryRoute);
 app.use("/adsRoute", adsRoute);
+app.use("/Adsadshort", Adsadshort);
+app.use("/stripe", stripeRoute);
+
+
 
 app.use("/users", userRoute);
 app.use("/groupRoute", groupRoute);

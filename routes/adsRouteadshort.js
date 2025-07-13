@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Ads = require('../model/Ads');
+const Ads = require('../model/Adsadshort');
 const authMiddleware = require('../middleware/authMiddleware');
 const { multerMiddleware } = require('../config/cloudinary');
 
@@ -83,17 +83,16 @@ router.delete('/ads/:id', async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
-router.put('/ads/:id', multerMiddleware.single('media'), async (req, res) => {
+
+// ✅ Update Ad
+router.put('/ads/:id',  multerMiddleware.single('media'), async (req, res) => {
   try {
     const {
       duration,
       budget,
       campaignType,
       campaignName,
-      campaignDetails,
-      isLiked,
-      userId,
-      comment, // ✅ Grab comment from body
+      campaignDetails
     } = req.body;
 
     const selectedTags = req.body['selectedTags[]'] || [];
@@ -111,25 +110,11 @@ router.put('/ads/:id', multerMiddleware.single('media'), async (req, res) => {
       updatedFields.mediaUrl = req.file.path;
     }
 
-    if (typeof isLiked !== 'undefined') {
-      updatedFields.isLiked = isLiked === 'true' || isLiked === true;
-    }
+    const updatedAd = await Ads.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
 
-    const ad = await Ads.findById(req.params.id);
-
-    if (!ad) {
+    if (!updatedAd) {
       return res.status(404).json({ message: 'Ad not found' });
     }
-
-    // ✅ Only push comment if both fields are present
-    if (comment && userId) {
-      ad.comments.push({ comment, userId });
-    }
-
-    // ✅ Update other fields
-    Object.assign(ad, updatedFields);
-
-    const updatedAd = await ad.save();
 
     res.status(200).json({ message: 'Ad updated successfully', ad: updatedAd });
   } catch (err) {
@@ -137,44 +122,5 @@ router.put('/ads/:id', multerMiddleware.single('media'), async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
-
-// ✅ Update Ad
-// router.put('/ads/:id',  multerMiddleware.single('media'), async (req, res) => {
-//   try {
-//     const {
-//       duration,
-//       budget,
-//       campaignType,
-//       campaignName,
-//       campaignDetails
-//     } = req.body;
-
-//     const selectedTags = req.body['selectedTags[]'] || [];
-
-//     const updatedFields = {
-//       duration,
-//       budget,
-//       campaignType,
-//       campaignName,
-//       campaignDetails,
-//       selectedTags: Array.isArray(selectedTags) ? selectedTags : [selectedTags],
-//     };
-
-//     if (req.file?.path) {
-//       updatedFields.mediaUrl = req.file.path;
-//     }
-
-//     const updatedAd = await Ads.findByIdAndUpdate(req.params.id, updatedFields, { new: true });
-
-//     if (!updatedAd) {
-//       return res.status(404).json({ message: 'Ad not found' });
-//     }
-
-//     res.status(200).json({ message: 'Ad updated successfully', ad: updatedAd });
-//   } catch (err) {
-//     console.error('Update Ad Error:', err);
-//     res.status(500).json({ message: 'Server Error' });
-//   }
-// });
 
 module.exports = router;

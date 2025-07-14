@@ -2,7 +2,22 @@ const User = require("../model/User");
 const response = require("../utils/responceHandler");
 
 
+const checkUserAuth = async(req, res) =>{
+     try {
+        const userId = req?.user?.userId;
+        if(!userId) return response(res,404, 'unauthenticated ! please login before access the data')
 
+        //fetch the user details and excude sensitive information
+        const user = await User.findById(userId).select('-password');
+
+        if(!user) return response(res,403, 'User not found')
+
+        return response(res,201, 'user retrived and allow to use Svryn Social', user)
+     } catch (error) {
+        return response(res, 500, 'Internal server error', error.message)
+     }
+}
+ 
 //follow user
 const followUser =  async(req,res) =>{
     const {userIdToFollow} = req.body;
@@ -232,56 +247,7 @@ const getAllUser = async (req, res) => {
 
 
 // //check if user is authenticated or not 
-// const checkUserAuth = async(req, res) =>{
-//      try {
-//         const userId = req?.user?.userId;
-//         if(!userId) return response(res,404, 'unauthenticated ! please login before access the data')
 
-//         //fetch the user details and excude sensitive information
-//         const user = await User.findById(userId).select('-password');
-
-//         if(!user) return response(res,403, 'User not found')
-
-//         return response(res,201, 'user retrived and allow to use Svryn Social', user)
-//      } catch (error) {
-//         return response(res, 500, 'Internal server error', error.message)
-//      }
-// }
-const checkUserAuth = async (req, res) => {
-  try {
-    // Passport.js attaches the deserialized user object directly to req.user
-    // This 'user' object comes from your deserializeUser function in passport-setup.js
-    const authenticatedUser = req.user; 
-
-    // If req.user is not present, the user is not authenticated by Passport.
-    if (!authenticatedUser) {
-      return response(res, 401, 'Unauthenticated! Please log in before accessing data.'); // Use 401 for unauthorized
-    }
-
-    // At this point, req.user already contains the user object (likely from your DB),
-    // because deserializeUser has already fetched it.
-    // So, you might not need to fetch it again unless you need to specifically exclude password
-    // or fetch updated data.
-
-    // If you've ensured 'password' is not included in your deserializeUser fetch,
-    // or if you're only storing a 'password' field for local logins and it's not set for Google users,
-    // you might not even need the `.select('-password')` here.
-    // However, keeping it is safe practice.
-
-    // If req.user is just an ID from deserializeUser, then you would fetch it here:
-    // const user = await User.findById(authenticatedUser._id || authenticatedUser.id).select('-password');
-    // For Passport, req.user is typically the full user object, so you can use it directly.
-
-    // Let's assume req.user is the full user object from deserializeUser, but we'll exclude password just in case.
-    const userWithoutPassword = authenticatedUser.toObject ? authenticatedUser.toObject() : { ...authenticatedUser };
-    delete userWithoutPassword.password; // Ensure password is removed if it exists
-
-    return response(res, 200, 'User retrieved and allowed to use Svryn Social.', userWithoutPassword); // Use 200 for success
-  } catch (error) {
-    console.error("Error in checkUserAuth:", error);
-    return response(res, 500, 'Internal server error', error.message);
-  }
-};
 
 const getUserProfile = async(req, res) =>{
     try {

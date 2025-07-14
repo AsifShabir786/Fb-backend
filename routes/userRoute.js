@@ -18,6 +18,7 @@ const {
 } = require("../controllers/createOrUpdateController");
 const { multerMiddleware } = require("../config/cloudinary");
 const router = express.Router();
+router.get("/check-auth", authMiddleware, checkUserAuth);
 
 //user follow
 router.post("/follow", authMiddleware, followUser);
@@ -44,7 +45,6 @@ router.get("/", authMiddleware, getAllUser);
 router.get("/profile/:userId", authMiddleware, getUserProfile);
 
 //get all users fror search
-router.get("/check-auth", authMiddleware, checkUserAuth);
 
 //create or update user bio
 router.put("/bio/:userId", authMiddleware, createOrUpdateUserBio);

@@ -197,8 +197,9 @@ const logout = (req, res) => {
   try {
     res.cookie("auth_token", "", {
       httpOnly: true,
-      sameSite: "none",
-      secure: true,
+         sameSite: "lax", // fallback for local without HTTPS
+
+      secure: false,
       expires: new Date(0),
     });
     return response(res, 200, "User logged out successfully");

@@ -105,34 +105,31 @@ const registerUser = async (req, res) => {
     return response(res, 500, "Internal Server Error", error.message);
   }
 };
-
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("email:", email);
-    console.log("password:", password);
 
     const user = await User.findOne({ email });
     if (!user) {
       return response(res, 404, "User not found with this email");
     }
 
-    console.log("user.password:", user.password);
-
     const matchPassword = await bcrypt.compare(password, user.password);
     if (!matchPassword) {
       return response(res, 404, "Invalid Password");
     }
 
-    const accessToken = generateToken(user);
+    const accessToken = generateToken(user); // Make sure this returns a JWT
 
+    // ✅ Set cookie correctly
     res.cookie("auth_token", accessToken, {
       httpOnly: true,
-      sameSite: "none",
       secure: true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
-    // ✅ Send full user object along with token
+    // ✅ Return safe user + token
     return response(res, 201, "User logged in successfully", {
       _id: user._id,
       username: user.username,
@@ -149,6 +146,52 @@ const loginUser = async (req, res) => {
     return response(res, 500, "Internal Server Error", error.message);
   }
 };
+
+// const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     console.log("email:", email);
+//     console.log("password:", password);
+
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return response(res, 404, "User not found with this email");
+//     }
+
+//     console.log("user.password:", user.password);
+
+//     const matchPassword = await bcrypt.compare(password, user.password);
+//     if (!matchPassword) {
+//       return response(res, 404, "Invalid Password");
+//     }
+
+//     const accessToken = generateToken(user);
+
+//     res.cookie("auth_token", accessToken, {
+//       httpOnly: true,
+//       sameSite: "none",
+//       secure: true,
+//       maxAge: 24 * 60 * 60 * 1000 // 1 day
+
+//     });
+
+//     // ✅ Send full user object along with token
+//     return response(res, 201, "User logged in successfully", {
+//       _id: user._id,
+//       username: user.username,
+//       email: user.email,
+//       profilePicture: user.profilePicture,
+//       phone: user.phone,
+//       role: user.role,
+//       createdAt: user.createdAt,
+//       updatedAt: user.updatedAt,
+//       token: accessToken,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     return response(res, 500, "Internal Server Error", error.message);
+//   }
+// };
 
 const logout = (req, res) => {
   try {

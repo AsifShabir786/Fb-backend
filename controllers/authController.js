@@ -197,8 +197,8 @@ const logout = (req, res) => {
   try {
  res.cookie('auth_token', token, {
   httpOnly: true,
-  secure: true, // Must be true for SameSite=None
-  sameSite: 'None',
+ secure: false, sameSite: 'Lax',
+
   maxAge: 24 * 60 * 60 * 1000 // 1 day
 });
 
